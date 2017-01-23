@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {{post.render() | safe}}
+  {% if user %}
+  	<p>You can comment</p>
+  {% else %}
+  	<p>Please Login in to Comment and Like</p>
+  {% endif %}
+{% endblock %}
