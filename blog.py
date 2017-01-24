@@ -119,7 +119,7 @@ def blog_key(name = 'default'):
 class Post(db.Model):
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
-    likes = db.IntegerProperty(required = True, default = 0)
+    likes = db.IntegerProperty()
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
 
@@ -127,11 +127,11 @@ class Post(db.Model):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
 
-class Comment(db.model):
-    comment = db.TextProperty(required = True)
-    user_name = db.StringProperty(required = True)
-    created = db.DateTimeProperty(auto_now_add = True)
-    last_modified = db.DateTimeProperty(auto_now = True)
+#class Comment(db.model):
+    #comment = db.TextProperty(required = True)
+    #user_name = db.StringProperty(required = True)
+    #created = db.DateTimeProperty(auto_now_add = True)
+    #last_modified = db.DateTimeProperty(auto_now = True)
 
 class BlogFront(BlogHandler):
     def get(self):
