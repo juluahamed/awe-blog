@@ -2,9 +2,23 @@
 
 {% block content %}
   {{post.render() | safe}}
+  <br>
+  <p>0 Likes 0 Comments</p>
+
   {% if user %}
-  	<p>You can comment</p>
+    <a href="/newcomment"><button>Comment</button></a>
   {% else %}
-  	<p>Please Login in to Comment and Like</p>
+    <button>You should be logged in to Comment</button>
   {% endif %}
+
+  {% for c in comments %}
+    <div class="comment">
+      <h6>{{comments.user_name}}
+      <p>{{comments.comment}}</p>
+      <br>
+    </div>
+  {% endfor %}
 {% endblock %}
+  
+ 
+  
