@@ -2,7 +2,11 @@
 
 {% block content %}
   {{post.render() | safe}}
+  {% if post.author == user.name %}
+    <p>edit/delete</p>
+  {% endif %}
   <br>
+
   <p>0 Likes 0 Comments</p>
 
   {% if user %}

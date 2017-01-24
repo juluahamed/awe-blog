@@ -119,6 +119,7 @@ def blog_key(name = 'default'):
 class Post(db.Model):
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
+    author = db.StringProperty()
     likes = db.IntegerProperty()
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
@@ -164,7 +165,7 @@ class NewPost(BlogHandler):
         content = self.request.get('content')
 
         if subject and content:
-            p = Post(parent = blog_key(), subject = subject, content = content)
+            p = Post(parent = blog_key(), subject = subject, content = content, author = self.user.name)
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
@@ -249,6 +250,7 @@ class Logout(BlogHandler):
 
 app = webapp2.WSGIApplication([('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
+                               #('/blog/([0-9]+)/newcomment', NewComment),
                                ('/blog/newpost', NewPost),
                                ('/signup', Register),
                                ('/login', Login),
