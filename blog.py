@@ -340,6 +340,9 @@ USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
     return username and USER_RE.match(username)
 
+def exsisting_user(username):
+    return User.by_name(username)
+
 PASS_RE = re.compile(r"^.{3,20}$")
 def valid_password(password):
     return password and PASS_RE.match(password)
@@ -365,7 +368,9 @@ class Register(BlogHandler):
         if not valid_username(self.username):
             params['error_username'] = "That's not a valid username."
             have_error = True
-
+        if exsisting_user(self.username):
+            params['error_username'] = "This username is already taken"
+            have_error =True
         if not valid_password(self.password):
             params['error_password'] = "That wasn't a valid password."
             have_error = True
