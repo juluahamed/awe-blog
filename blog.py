@@ -140,6 +140,9 @@ class Comment(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
 
+    def render(self):
+        return self.comment.replace('\n', '<br>')
+
 class Like(db.Model):
     user_name = db.StringProperty(required = True)
     post_id = db.IntegerProperty(required =True)

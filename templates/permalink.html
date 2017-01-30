@@ -59,7 +59,7 @@
         {% for c in comment %}
           <div class="comment">
             <h4><strong>{{c.user_name}}</strong></h4>
-            <p>{{c.comment}}</p>
+            <p>{{c.render() | safe}}</p>
             {% if c.user_name == user.name %}
               <p>
               <a href="/blog/editcomment/{{post.key().id()}}+{{c.key().id()}}"><span>Edit Comment | </span></a>
