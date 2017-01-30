@@ -129,16 +129,16 @@ class Post(db.Model):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
 
+def get_post_key(post_id):
+    return db.Key.from_path('Post', post_id, parent=blog_key())
+    
+
 class Comment(db.Model):
     comment = db.TextProperty(required = True)
     user_name = db.StringProperty(required = True)
     post_id = db.IntegerProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
-
-    @classmethod
-    def by_id(cls, uid):
-        return Comment.get_by_id(uid)
 
 class Like(db.Model):
     user_name = db.StringProperty(required = True)
@@ -153,7 +153,7 @@ class BlogFront(BlogHandler):
 
 class PostPage(BlogHandler):
     def get(self, post_id):
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        key = get_post_key(int(post_id))
         post = db.get(key)
         comments = Comment.all()
         comment = comments.ancestor(post).order("-created")
@@ -163,7 +163,7 @@ class PostPage(BlogHandler):
             return
         self.render("permalink.html", post = post, like = None, comment = comment)
     def post(self, post_id):
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        key = get_post_key(int(post_id))
         post = db.get(key)
         comments = Comment.all()
         comments = comments.ancestor(post).order("-created")
@@ -223,7 +223,7 @@ class NewPost(BlogHandler):
 class EditPost(BlogHandler):
     def get(self, post_id):
         if self.user:
-            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            key = get_post_key(int(post_id))
             post = db.get(key)
             if not post:
                 self.error(404)
@@ -242,7 +242,7 @@ class EditPost(BlogHandler):
         subject = self.request.get('subject')
         content = self.request.get('content')
         if subject and content:
-            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            key = get_post_key(int(post_id))
             p = db.get(key)
             p.subject = subject
             p.content = content
@@ -256,7 +256,7 @@ class EditPost(BlogHandler):
 class DeletePost(BlogHandler):
     def get(self, post_id):
         if self.user:
-            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            key = get_post_key(int(post_id))
             post = db.get(key)
 
             if not post:
@@ -275,7 +275,7 @@ class EditComment(BlogHandler):
     def get(self, comb_id):
         post_id = comb_id.split('+')[0]
         comment_id = comb_id.split('+')[1]
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        key = get_post_key(int(post_id))
         post = db.get(key)
         c_key = db.Key.from_path('Comment', int(comment_id), parent = key)
         comment = db.get(c_key)
@@ -294,7 +294,7 @@ class EditComment(BlogHandler):
     def post(self, comb_id):
         post_id = comb_id.split('+')[0]
         comment_id = comb_id.split('+')[1]
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        key = get_post_key(int(post_id))
         post = db.get(key)
         c_key = db.Key.from_path('Comment', int(comment_id), parent = key)
         comment = db.get(c_key)
@@ -307,13 +307,15 @@ class DeleteComment(BlogHandler):
     def get(self, comb_id):
         post_id = comb_id.split('+')[0]
         comment_id = comb_id.split('+')[1]
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        key = get_post_key(int(post_id))
         post = db.get(key)
         c_key = db.Key.from_path('Comment', int(comment_id), parent = key)
         comment = db.get(c_key)
         if self.user:
             if self.user.name == comment.user_name:
                 comment.delete()
+                post.comment -= 1
+                post.put()
                 self.redirect('/blog/%s' % post_id)
             else:
                 self.render("deletecomment.html", error="You can only delete your own comments")
