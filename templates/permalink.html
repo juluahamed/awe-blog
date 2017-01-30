@@ -3,11 +3,19 @@
 {% block content %}
   {{post.render() | safe}}
   {% if post.author == user.name %}
-    <p>edit/delete</p>
+    <a href="/blog/editpost/{{post.key().id()}}"><p>Edit Post</p></a>
+    <a href="/blog/deletepost/{{post.key().id()}}"><p>Delete Post</p></a>
   {% endif %}
   <br>
 
-  <p>0 Likes 0 Comments</p>
+  <p>{{post.likes}} Likes  {{post.comment}} Comments</p>
+  <form method="post">
+    {% if like %}
+      <input name="like" type="submit" value="Unlike">
+    {% else %}
+      <input name="like" type="submit" value="Like">
+    {% endif %}
+  </form>
 
   {% if user %}
     <a href="/newcomment"><button>Comment</button></a>
@@ -15,10 +23,25 @@
     <button>You should be logged in to Comment</button>
   {% endif %}
 
-  {% for c in comments %}
+  <form method="post">
+    <textarea name="comment">
+      
+    </textarea>
+
+  <input type="submit">
+  </form>
+  <div class=error>
+  <p>{{error}}</p>
+  </div>
+
+  {% for c in comment %}
     <div class="comment">
-      <h6>{{comments.user_name}}
-      <p>{{comments.comment}}</p>
+      <h6>{{c.user_name}}
+      <p>{{c.comment}}</p>
+      {% if c.user_name == user.name %}
+        <a href="/blog/editcomment/{{post.key().id()}}+{{c.key().id()}}"><p>Edit Comment</p></a>
+        <a href="/blog/deletecomment/{{post.key().id()}}+{{c.key().id()}}"><p>Delete Comment</p></a>
+      {% endif %}
       <br>
     </div>
   {% endfor %}
