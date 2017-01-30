@@ -2,28 +2,48 @@
 
 {% block content %}
   {{post.render() | safe}}
+  <hr>
   {% if post.author == user.name %}
-    <a href="/blog/editpost/{{post.key().id()}}"><p>Edit Post</p></a>
-    <a href="/blog/deletepost/{{post.key().id()}}"><p>Delete Post</p></a>
+    <p>
+      <a href="/blog/editpost/{{post.key().id()}}"><span>Edit Post | </span></a>
+      <a href="/blog/deletepost/{{post.key().id()}}"><span> Delete Post</span></a>
+    </p>
   {% endif %}
-  <br>
 
   <p>{{post.likes}} Likes  {{post.comment}} Comments</p>
   <form method="post">
     {% if like %}
-      <input name="like" type="submit" value="Unlike">
+      <input type="submit" class="btn btn-success btn-xs" name="like" value="Unlike">
     {% else %}
-      <input name="like" type="submit" value="Like">
+      <input type="submit" class="btn btn-primary btn-xs" name="like" value="Like">
     {% endif %}
   </form>
 
+<!--
   {% if user %}
     <a href="/newcomment"><button>Comment</button></a>
   {% else %}
     <button>You should be logged in to Comment</button>
   {% endif %}
-
-  <form method="post">
+-->
+</div>
+  </div>
+  <div class="row commentarea">
+    <div class="col-md-7 col-md-offset-1">
+        <div class="like-comment-error">
+        {% if error %}
+          <p class="alert alert-danger">{{error}}</p>
+        {% endif %}
+        </div>
+        <form method="post">
+          <textarea class="comment-text-area" name="comment"></textarea>
+    </div>
+    <div class="col-md-4">
+          <input type="submit" class="btn btn-success btn-lg comment-button" value="Comment">
+        </form>
+    </div>
+  </div>
+  <!--<form method="post">
     <textarea name="comment">
       
     </textarea>
@@ -33,17 +53,20 @@
   <div class=error>
   <p>{{error}}</p>
   </div>
-
-  {% for c in comment %}
-    <div class="comment">
-      <h6>{{c.user_name}}
-      <p>{{c.comment}}</p>
-      {% if c.user_name == user.name %}
-        <a href="/blog/editcomment/{{post.key().id()}}+{{c.key().id()}}"><p>Edit Comment</p></a>
-        <a href="/blog/deletecomment/{{post.key().id()}}+{{c.key().id()}}"><p>Delete Comment</p></a>
-      {% endif %}
-      <br>
-    </div>
+-->
+  <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+        {% for c in comment %}
+          <div class="comment">
+            <h4><strong>{{c.user_name}}</strong></h4>
+            <p>{{c.comment}}</p>
+            {% if c.user_name == user.name %}
+              <p>
+              <a href="/blog/editcomment/{{post.key().id()}}+{{c.key().id()}}"><span>Edit Comment | </span></a>
+              <a href="/blog/deletecomment/{{post.key().id()}}+{{c.key().id()}}"><span> Delete Comment </span></a>
+            {% endif %}
+            <hr>
+          </div>
   {% endfor %}
 {% endblock %}
   

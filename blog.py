@@ -171,12 +171,15 @@ class PostPage(BlogHandler):
         if self.user:
             like = Like.all().ancestor(post).filter("user_name =", self.user.name).get()
             if not self.request.get('like'):
-                comment = self.request.get('comment')
-                c = Comment(comment = comment, user_name = self.user.name, post_id= int(post_id), parent = post )
-                c.put()
-                post.comment += 1
-                post.put()
-                self.render("permalink.html", post = post, comment = comments, like = like)
+                if not self.request.get('comment'):
+                    self.render("permalink.html", post = post, comment = comments, like = like, error="Your comment is empty")
+                else:
+                    comment = self.request.get('comment')
+                    c = Comment(comment = comment, user_name = self.user.name, post_id= int(post_id), parent = post )
+                    c.put()
+                    post.comment += 1
+                    post.put()
+                    self.render("permalink.html", post = post, comment = comments, like = like)
             else:
                 if not self.user.name == post.author:
                     #l_key = db.Key.from_path('Post', int(post_id), parent = post)
@@ -203,7 +206,7 @@ class NewPost(BlogHandler):
         if self.user:
             self.render("newpost.html")
         else:
-            self.redirect("/login")
+            self.render("newpost.html", error="You should be logged in to post a new blog")
 
     def post(self):
         if not self.user:
@@ -231,7 +234,7 @@ class EditPost(BlogHandler):
             if self.user.name == post.author:
                 self.render("editpost.html", post = post)
             else:
-                self.render("editpost.html", error="You can only edit your own post")
+                self.render("editpost.html", error = "You can only edit your own post")
         else:
             self.redirect('/blog')
         
@@ -241,9 +244,9 @@ class EditPost(BlogHandler):
     def post(self, post_id):
         subject = self.request.get('subject')
         content = self.request.get('content')
+        key = get_post_key(int(post_id))
+        p = db.get(key)
         if subject and content:
-            key = get_post_key(int(post_id))
-            p = db.get(key)
             p.subject = subject
             p.content = content
             p.author = self.user.name
@@ -251,7 +254,7 @@ class EditPost(BlogHandler):
             self.redirect('/blog/%s' % str(post_id))
         else:
             error = "subject and content, please!"
-            self.render("newpost.html", subject=subject, content=content, error=error)
+            self.render("editpost.html", post = p, error=error)
 
 class DeletePost(BlogHandler):
     def get(self, post_id):
@@ -284,7 +287,7 @@ class EditComment(BlogHandler):
                 if self.user.name == comment.user_name:
                     self.render("editcomment.html", comment = comment)
                 else:
-                    self.render("editcomment.html", error ="You can only edit your own comments" )
+                    self.render("editcomment.html", post= post, comment=comment, error ="You can only edit your own comments" )
             else:
                 self.redirect('/blog')
         else:
@@ -292,16 +295,20 @@ class EditComment(BlogHandler):
             return
 
     def post(self, comb_id):
-        post_id = comb_id.split('+')[0]
-        comment_id = comb_id.split('+')[1]
-        key = get_post_key(int(post_id))
-        post = db.get(key)
-        c_key = db.Key.from_path('Comment', int(comment_id), parent = key)
-        comment = db.get(c_key)
-        new_comment = self.request.get('comment')
-        comment.comment = new_comment
-        comment.put()
-        self.redirect('/blog/%s' % post_id)
+            post_id = comb_id.split('+')[0]
+            comment_id = comb_id.split('+')[1]
+            key = get_post_key(int(post_id))
+            post = db.get(key)
+            c_key = db.Key.from_path('Comment', int(comment_id), parent = key)
+            comment = db.get(c_key)
+            if self.request.get('comment'):
+                new_comment = self.request.get('comment')
+                comment.comment = new_comment
+                comment.put()
+                self.redirect('/blog/%s' % post_id)
+            else:
+                self.render("editcomment.html", comment=comment, error="Your Comment was empty")
+
 
 class DeleteComment(BlogHandler):
     def get(self, comb_id):

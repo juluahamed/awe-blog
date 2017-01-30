@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-	{% if not error %}
-	<form method="post">
-		<input type="text" name="subject" value="{{post.subject}}">
-		<input type="text" name="content" value="{{post.content}}">
-		<input type="submit">
-	</form>
+	{% if error!= "You can only edit your own post" %}
+		<h3><strong>Edit Post</strong></h3>
+		{%if error %}
+			<p class="alert alert-danger">{{error}}</p>
+		{% endif %}
+		<form method="post">
+			<h4>Subject</h4>
+			<input type="text" name="subject" value="{{post.subject}}">
+			<h4>Blog</h4>
+			<textarea type="text" name="content">{{post.content}}</textarea>
+			<br>
+			<input type="submit" class="btn btn-primary btn-lg" value="Done">
+			<span><button href="/blog/{{post.key().id()}}" class="btn btn-danger btn-lg">Cancel</button></span>
+		</form>
 	{% else %}
 		<p class="error">{{error}}</p>
 		<p>Redirect back to <a href="/blog/">blog page</a></p>

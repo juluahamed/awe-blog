@@ -1,13 +1,25 @@
 {% extends "base.html" %}
 	{% block content %}
-		{% if not error %}
-			<form method="post">
+		<h3>Edit Comment</h3>
+		{% if error != "You can only edit your own comments" %}
+			{% if error %}
+				 <p class="alert alert-danger">{{error}}</p>
+			{% endif %}
+				<form method="post">
 				<textarea name="comment">{{comment.comment}}</textarea>
-				<input type="submit">
+				<br>
+				<input type="submit" class="btn btn-success btn-lg" value="Comment">
+				<span><button href="/blog/" class="btn btn-danger btn-lg">Cancel</button></span>
 			</form>
 		{% else %}
 			<p class="error">{{error}}</p>
-			<p> Go back to the <a href="/blog">blog page</a></p>
+			<p> Go back to the <a href="/blog/{{post.key().id()}}">blog page</a></p>
+
+		{% endif %}
+		{% if not error %}
+			
+		{% else %}
+			
 		{% endif %}
 
 	{% endblock %}

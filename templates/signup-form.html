@@ -3,68 +3,82 @@
 <html>
   <head>
     <title>Sign Up</title>
-    <style type="text/css">
-      .label {text-align: right}
-      .error {color: red}
-    </style>
-
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
   </head>
 
   <body>
-    <h2>Signup</h2>
-    <form method="post">
-      <table>
-        <tr>
-          <td class="label">
-            Username
-          </td>
-          <td>
-            <input type="text" name="username" value="{{username}}">
-          </td>
-          <td class="error">
-            {{error_username}}
-          </td>
-        </tr>
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/blog">Awe-Blog</a>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 col-md-offset-2">
+          <h2>Signup</h2>
+          <form method="post">
+            <table class="table table-condensed">
+              <tr>
+                <td>Username</td>
+                <td>
+                  <input type="text" name="username" value="{{username}}">
+                </td>
+                {% if error_username %}
+                  <td class="alert alert-danger">
+                    {{error_username}}
+                  </td>
+                {% endif %}
+              </tr>
 
-        <tr>
-          <td class="label">
-            Password
-          </td>
-          <td>
-            <input type="password" name="password" value="">
-          </td>
-          <td class="error">
-            {{error_password}}
-          </td>
-        </tr>
+              <tr>
+                <td>
+                  Password
+                </td>
+                <td>
+                  <input type="password" name="password" value="">
+                </td>
+                {% if error_password %}
+                  <td class="alert alert-danger">
+                    {{error_password}}
+                  </td>
+                {% endif %}
+              </tr>
 
-        <tr>
-          <td class="label">
-            Verify Password
-          </td>
-          <td>
-            <input type="password" name="verify" value="">
-          </td>
-          <td class="error">
-            {{error_verify}}
-          </td>
-        </tr>
+              <tr>
+                <td>
+                  Verify Password
+                </td>
+                <td>
+                  <input type="password" name="verify" value="">
+                </td>
+                {% if error_verify %}
+                  <td class="alert alert-danger">
+                    {{error_verify}}
+                  </td>
+                {% endif %}
+              </tr>
 
-        <tr>
-          <td class="label">
-            Email (optional)
-          </td>
-          <td>
-            <input type="text" name="email" value="{{email}}">
-          </td>
-          <td class="error">
-            {{error_email}}
-          </td>
-        </tr>
-      </table>
+              <tr>
+                <td>
+                  Email (optional)
+                </td>
+                <td>
+                  <input type="text" name="email" value="{{email}}">
+                </td>
+                {% if error_email %}
+                  <td class="alert alert-danger">
+                    {{error_email}}
+                  </td>
+                {% endif %}
+              </tr>
+            </table>
 
-      <input type="submit">
-    </form>
+            <input type="submit" class="btn btn-primary btn-block" value="SignUp">
+          </form>
+          <p>Already a member? Sign In now!</p>
+          <a href="/login" class="btn btn-info btn-block" role="button">SignIn</a>
   </body>
 
 </html>
