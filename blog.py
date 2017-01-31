@@ -416,7 +416,7 @@ class Login(BlogHandler):
             self.redirect('/blog')
         else:
             msg = 'Invalid login'
-            self.render('login-form.html', error = msg)
+            self.render('login-form.html', username = username, error = msg)
 
 class Logout(BlogHandler):
     def get(self):
