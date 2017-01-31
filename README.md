@@ -22,7 +22,7 @@ This app creates a blog framework with following functionalities
 ## Files & folders
 - blog.py : This is the python file that runs the app
 - index.yaml : Contains the index created for datastore(these are automatically created)
-- app.yaml : App configuration (eg: Specifies folders for templates and use jinja2 framework)
+- app.yaml : App configuration (eg: Specifies folders for templates and use of jinja2 framework)
 - static folder : This and its subfolders contains all static files used in project(css,js etc)
 - templates folder : Contains all the templates that are used for this project(used through jinja2)
 
