@@ -26,7 +26,11 @@
     <div class="col-md-7 col-md-offset-1">
         <div class="like-comment-error">
         {% if error %}
-          <p class="alert alert-danger">{{error}}. <a href="/login">Click here to login</a></p>
+          <p class="alert alert-danger">{{error}}. 
+          {% if error == "You should be logged in to comment and like" %}
+            <a href="/login">Click here to login</a>
+          {% endif %}
+          </p>
         {% endif %}
         </div>
         <form method="post">
