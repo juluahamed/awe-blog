@@ -10,10 +10,11 @@ import jinja2
 
 from google.appengine.ext import db
 
+#Setup for Jinja2
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                autoescape = True)
-
+#Secret for Hashing
 secret = 'fart'
 
 def render_str(template, **params):
@@ -29,6 +30,7 @@ def check_secure_val(secure_val):
         return val
 
 class BlogHandler(webapp2.RequestHandler):
+    """Main handler class for blog"""
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
@@ -55,6 +57,8 @@ class BlogHandler(webapp2.RequestHandler):
     def logout(self):
         self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
 
+    # initialize is internally called at the begining on each handler request
+    # so it checks for cookie and identify if user is logged in  
     def initialize(self, *a, **kw):
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
@@ -65,7 +69,7 @@ def render_post(response, post):
     response.out.write(post.content)
 
 
-##### user stuff
+##### user stuff(hashing/validation)
 def make_salt(length = 5):
     return ''.join(random.choice(letters) for x in xrange(length))
 
@@ -82,6 +86,7 @@ def valid_pw(name, password, h):
 def users_key(group = 'default'):
     return db.Key.from_path('users', group)
 
+# model class for entities of kind 'User'
 class User(db.Model):
     name = db.StringProperty(required = True)
     pw_hash = db.StringProperty(required = True)
@@ -116,6 +121,7 @@ class User(db.Model):
 def blog_key(name = 'default'):
     return db.Key.from_path('blogs', name)
 
+# model class for entities of kind 'Post'
 class Post(db.Model):
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
@@ -125,6 +131,7 @@ class Post(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
 
+    # render newline/multiple spaces in post content in HTML
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
@@ -132,17 +139,19 @@ class Post(db.Model):
 def get_post_key(post_id):
     return db.Key.from_path('Post', post_id, parent=blog_key())
     
-
+# model class for entities of kind 'Comment'
 class Comment(db.Model):
     comment = db.TextProperty(required = True)
     user_name = db.StringProperty(required = True)
     post_id = db.IntegerProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
-
+    
+    # render newline/multiple spaces in comment in HTML
     def render(self):
         return self.comment.replace('\n', '<br>')
 
+# model class for entities of kind 'Like'
 class Like(db.Model):
     user_name = db.StringProperty(required = True)
     post_id = db.IntegerProperty(required =True)
@@ -150,11 +159,13 @@ class Like(db.Model):
     last_modified = db.DateTimeProperty(auto_now = True)
 
 class BlogFront(BlogHandler):
+    """Handler for '/blog' page.Displays recent posts"""
     def get(self):
         posts = greetings = Post.all().order('-created')
         self.render('front.html', posts = posts)
 
 class PostPage(BlogHandler):
+    """Handler for each Post. Shows/handles content, comments & likes"""
     def get(self, post_id):
         key = get_post_key(int(post_id))
         post = db.get(key)
@@ -168,6 +179,7 @@ class PostPage(BlogHandler):
             self.error(404)
             return
         self.render("permalink.html", post = post, like = like, comment = comment)
+
     def post(self, post_id):
         key = get_post_key(int(post_id))
         post = db.get(key)
@@ -188,8 +200,6 @@ class PostPage(BlogHandler):
                     self.render("permalink.html", post = post, comment = comments, like = like)
             else:
                 if not self.user.name == post.author:
-                    #l_key = db.Key.from_path('Post', int(post_id), parent = post)
-                    #like = Like.all().ancestor(post).filter("user_name =", self.user.name).get()
                     if not like:
                         l = Like(post_id = int(post_id), user_name = self.user.name, parent = post)
                         l.put()
@@ -208,6 +218,7 @@ class PostPage(BlogHandler):
             self.render("permalink.html", post = post, comment = comments,  like = None, error ="You should be logged in to comment and like" )
 
 class NewPost(BlogHandler):
+    """Handler for creating new post. Accepts subject&content from user"""
     def get(self):
         if self.user:
             self.render("newpost.html")
@@ -230,6 +241,7 @@ class NewPost(BlogHandler):
             self.render("newpost.html", subject=subject, content=content, error=error)
 
 class EditPost(BlogHandler):
+    """Handler for editing an exsisting post"""
     def get(self, post_id):
         if self.user:
             key = get_post_key(int(post_id))
@@ -242,10 +254,7 @@ class EditPost(BlogHandler):
             else:
                 self.render("editpost.html", error = "You can only edit your own post")
         else:
-            self.redirect('/blog')
-        
-
-        
+            self.redirect('/login')
 
     def post(self, post_id):
         subject = self.request.get('subject')
@@ -263,6 +272,7 @@ class EditPost(BlogHandler):
             self.render("editpost.html", post = p, error=error)
 
 class DeletePost(BlogHandler):
+    """Handler for deleting an exsisting Post"""
     def get(self, post_id):
         if self.user:
             key = get_post_key(int(post_id))
@@ -278,9 +288,10 @@ class DeletePost(BlogHandler):
             else:
                 self.render("deletepost.html", error="You can only delete your own posts")
         else:
-            self.redirect('/blog')
+            self.redirect('/login')
 
 class EditComment(BlogHandler):
+    """Handler for editing an exsisting comment"""
     def get(self, comb_id):
         post_id = comb_id.split('+')[0]
         comment_id = comb_id.split('+')[1]
@@ -295,7 +306,7 @@ class EditComment(BlogHandler):
                 else:
                     self.render("editcomment.html", post= post, comment=comment, error ="You can only edit your own comments" )
             else:
-                self.redirect('/blog')
+                self.redirect('/login')
         else:
             self.error(404)
             return
@@ -317,6 +328,7 @@ class EditComment(BlogHandler):
 
 
 class DeleteComment(BlogHandler):
+    """Handler for deleting an exsisting comment"""
     def get(self, comb_id):
         post_id = comb_id.split('+')[0]
         comment_id = comb_id.split('+')[1]
@@ -333,12 +345,9 @@ class DeleteComment(BlogHandler):
             else:
                 self.render("deletecomment.html", error="You can only delete your own comments")
         else:
-            self.redirect('/blog')
+            self.redirect('/login')
 
-
-
-
-
+### sign up verification functions
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
     return username and USER_RE.match(username)
@@ -355,6 +364,7 @@ def valid_email(email):
     return not email or EMAIL_RE.match(email)
 
 class Register(BlogHandler):
+    """Handler for user registration. Handles '/signup' validations & stores user info"""
     def get(self):
         if self.user:
             self.logout()
@@ -401,6 +411,7 @@ class Register(BlogHandler):
                 self.redirect('/blog')
 
 class Login(BlogHandler):
+    """Handler for /login page. Handles user info verification and login"""
     def get(self):
         if self.user:
             self.logout()
@@ -419,17 +430,16 @@ class Login(BlogHandler):
             self.render('login-form.html', username = username, error = msg)
 
 class Logout(BlogHandler):
+    """Logs user out. Calls functions reset the cookie"""
     def get(self):
         self.logout()
         self.redirect('/blog')
 
-
+# URLs and handlers
 app = webapp2.WSGIApplication([('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/editpost/([0-9]+)', EditPost),
                                ('/blog/deletepost/([0-9]+)', DeletePost),
-                               #('/liked/([0-9]+)',LikedPost),
-                               #('/blog/([0-9]+)/newcomment', NewComment),
                                ('/blog/editcomment/(.*)', EditComment),
                                ('/blog/deletecomment/(.*)', DeleteComment),
                                ('/blog/newpost', NewPost),

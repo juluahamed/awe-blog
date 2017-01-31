@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+<!-- post Subject &content -->
 {% block content %}
   {{post.render() | safe}}
   <hr>
@@ -9,7 +9,7 @@
       <a href="/blog/deletepost/{{post.key().id()}}"><span> Delete Post</span></a>
     </p>
   {% endif %}
-
+  <!-- count of likes, comments and like button-->
   <p>{{post.likes}} Likes  {{post.comment}} Comments</p>
   <form method="post">
     {% if like %}
@@ -19,20 +19,14 @@
     {% endif %}
   </form>
 
-<!--
-  {% if user %}
-    <a href="/newcomment"><button>Comment</button></a>
-  {% else %}
-    <button>You should be logged in to Comment</button>
-  {% endif %}
--->
 </div>
   </div>
+  <!--Comment box Area -->
   <div class="row commentarea">
     <div class="col-md-7 col-md-offset-1">
         <div class="like-comment-error">
         {% if error %}
-          <p class="alert alert-danger">{{error}}</p>
+          <p class="alert alert-danger">{{error}}. <a href="/login">Click here to login</a></p>
         {% endif %}
         </div>
         <form method="post">
@@ -43,17 +37,7 @@
         </form>
     </div>
   </div>
-  <!--<form method="post">
-    <textarea name="comment">
-      
-    </textarea>
-
-  <input type="submit">
-  </form>
-  <div class=error>
-  <p>{{error}}</p>
-  </div>
--->
+  <!--List of comments -->
   <div class="row">
       <div class="col-md-10 col-md-offset-1">
         {% for c in comment %}
