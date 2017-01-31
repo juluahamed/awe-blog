@@ -356,6 +356,8 @@ def valid_email(email):
 
 class Register(BlogHandler):
     def get(self):
+        if self.user:
+            self.logout()
         self.render("signup-form.html")
 
     def post(self):
@@ -400,6 +402,8 @@ class Register(BlogHandler):
 
 class Login(BlogHandler):
     def get(self):
+        if self.user:
+            self.logout()
         self.render('login-form.html')
 
     def post(self):
