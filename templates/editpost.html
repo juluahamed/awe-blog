@@ -12,7 +12,7 @@
 			<textarea type="text" name="content">{{post.content}}</textarea>
 			<br>
 			<input type="submit" class="btn btn-primary btn-lg" value="Done">
-			<span><button href="/blog/{{post.key().id()}}" class="btn btn-danger btn-lg">Cancel</button></span>
+			<span><a href="/blog/{{post.key().id()}}" class="btn btn-danger btn-lg" role="button">Cancel</a></span>
 		</form>
 	{% else %}
 		<p class="error">{{error}}</p>

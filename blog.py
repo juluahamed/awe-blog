@@ -160,11 +160,14 @@ class PostPage(BlogHandler):
         post = db.get(key)
         comments = Comment.all()
         comment = comments.ancestor(post).order("-created")
-        #like = Like.all().ancestor(post).filter("user_name =", self.user.name).get()
+        if self.user:
+            like = Like.all().ancestor(post).filter("user_name =", self.user.name).get()
+        else:
+            like = None
         if not post:
             self.error(404)
             return
-        self.render("permalink.html", post = post, like = None, comment = comment)
+        self.render("permalink.html", post = post, like = like, comment = comment)
     def post(self, post_id):
         key = get_post_key(int(post_id))
         post = db.get(key)
@@ -288,7 +291,7 @@ class EditComment(BlogHandler):
         if post and comment:
             if self.user:
                 if self.user.name == comment.user_name:
-                    self.render("editcomment.html", comment = comment)
+                    self.render("editcomment.html",post =post, comment = comment)
                 else:
                     self.render("editcomment.html", post= post, comment=comment, error ="You can only edit your own comments" )
             else:

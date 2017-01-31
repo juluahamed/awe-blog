@@ -9,7 +9,7 @@
 				<textarea name="comment">{{comment.comment}}</textarea>
 				<br>
 				<input type="submit" class="btn btn-success btn-lg" value="Comment">
-				<span><button href="/blog/" class="btn btn-danger btn-lg">Cancel</button></span>
+				<span><a href="/blog/{{post.key().id()}}" class="btn btn-danger btn-lg" role="button">Cancel</a></span>
 			</form>
 		{% else %}
 			<p class="error">{{error}}</p>
