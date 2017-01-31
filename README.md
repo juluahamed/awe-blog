@@ -1,6 +1,6 @@
 # awe-blog
 A simple blog application with user accounts, login/logout, blog post management, comments and likes.
-Built using Google App Engine utilizing python and jinja2
+Built using Google App Engine utilizing python and jinja2 (https://awe-blog.appspot.com/blog)
 
 ## Working and Output
 This app creates a blog framework with following functionalities
