@@ -1,24 +1,19 @@
 from handlers import BlogHandler
 from models import Post
-from handlers.utils import blog_key
+from handlers.utils import blog_key, check_user_logged_in
 
 class NewPost(BlogHandler):
-    """Handler for creating new post. Accepts subject&content from user"""
+    """Handler for creating new post. Accepts subject & content from user"""
+    @check_user_logged_in
     def get(self):
-        if self.user:
-            self.render("newpost.html")
-        else:
-            self.render("newpost.html", error="You should be logged in to post a new blog")
+        self.render("newpost.html")
 
+    @check_user_logged_in
     def post(self):
-        if not self.user:
-            self.redirect('/blog')
-
         subject = self.request.get('subject')
         content = self.request.get('content')
-
         if subject and content:
-            p = Post(parent = blog_key(), subject = subject, content = content, author = self.user.name)
+            p = Post(user = self.user, subject = subject, content = content, author = self.user.name, parent = blog_key())
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:

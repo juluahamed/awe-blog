@@ -11,7 +11,7 @@
   {% endif %}
   <!-- count of likes, comments and like button-->
   <p>{{post.likes}} Likes  {{post.comment}} Comments</p>
-  <form method="post">
+  <form action="/blog/{{post.key().id()}}/likehandler" method="post">
     {% if like %}
       <input type="submit" class="btn btn-success btn-xs" name="like" value="Unlike">
     {% else %}
@@ -26,14 +26,10 @@
     <div class="col-md-7 col-md-offset-1">
         <div class="like-comment-error">
         {% if error %}
-          <p class="alert alert-danger">{{error}}. 
-          {% if error == "You should be logged in to comment and like" %}
-            <a href="/login">Click here to login</a>
-          {% endif %}
-          </p>
+          <p class="alert alert-danger">{{error}}.</p>
         {% endif %}
         </div>
-        <form method="post">
+        <form action="/blog/{{post.key().id()}}/newcomment" method="post">
           <textarea class="comment-text-area" name="comment"></textarea>
     </div>
     <div class="col-md-4">
@@ -50,8 +46,8 @@
             <p>{{c.render() | safe}}</p>
             {% if c.user_name == user.name %}
               <p>
-              <a href="/blog/editcomment/{{post.key().id()}}+{{c.key().id()}}"><span>Edit Comment | </span></a>
-              <a href="/blog/deletecomment/{{post.key().id()}}+{{c.key().id()}}"><span> Delete Comment </span></a>
+              <a href="/blog/editcomment/{{post.key().id()}}/{{c.key().id()}}"><span>Edit Comment | </span></a>
+              <a href="/blog/deletecomment/{{post.key().id()}}/{{c.key().id()}}"><span> Delete Comment </span></a>
             {% endif %}
             <hr>
           </div>

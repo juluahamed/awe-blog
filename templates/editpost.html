@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-	{% if error!= "You can only edit your own post" %}
 		<h3><strong>Edit Post</strong></h3>
 		{%if error %}
 			<p class="alert alert-danger">{{error}}</p>
@@ -14,8 +13,4 @@
 			<input type="submit" class="btn btn-primary btn-lg" value="Done">
 			<span><a href="/blog/{{post.key().id()}}" class="btn btn-danger btn-lg" role="button">Cancel</a></span>
 		</form>
-	{% else %}
-		<p class="error">{{error}}</p>
-		<p>Redirect back to <a href="/blog/">blog page</a></p>
-	{% endif %}
 {% endblock %}

@@ -2,7 +2,6 @@
 
 {% block content %}
   <h2>New post</h2>
-  {% if error != "You should be logged in to post a new blog" %}
     {% if error %}
      <p class="alert alert-danger">{{error}}</p>
     {% endif %}
@@ -15,8 +14,4 @@
         <input type="submit" class="btn btn-primary btn-lg" value="Done">
         <span><a href="/blog" class="btn btn-danger btn-lg" role="button">Cancel</a></span>
     </form>
-    {% else %}
-      <p class="error">{{error}}</p>
-      <p>Redirect to <a href="/blog">blog page</a> or <a href="/login">Login</a> now </p>
-    {% endif %}
 {% endblock %}

@@ -14,7 +14,7 @@ label + label {
     margin-top: 20px;
 }
 input[type=text] {
-    width: 500px;
+    width: 100%;
     font-size: 20px;
     padding: 2px;
     font-family: monospace;

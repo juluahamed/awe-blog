@@ -1,7 +1,9 @@
 from google.appengine.ext import db
 from handlers.utils import render_str
+from user import User
 # model class for entities of kind 'Post'
 class Post(db.Model):
+    user = db.ReferenceProperty(User, collection_name='user_posts')
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
     author = db.StringProperty()

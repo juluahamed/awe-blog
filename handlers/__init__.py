@@ -9,3 +9,5 @@ from logout import Logout
 from newpost import NewPost
 from postpage import PostPage
 from register import Register
+from newcomment import NewComment
+from likehandler import LikeHandler

@@ -1,12 +1,9 @@
-import hashlib
-import hmac
-
 from models import User
 from handlers.utils import render_str
-#from google.appengine.ext import db
-import webapp2
-#import jinja2
 
+import hashlib
+import hmac
+import webapp2
 
 
 #Secret for Hashing
