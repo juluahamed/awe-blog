@@ -66,7 +66,18 @@ input[type=submit] {
     bottom: 0px;
     color: #999;
 }
+.post-date-small {
+    display: none;
+    color: #999;
+}
 .post-content {
     margin-top: 5px;
 }
-
+@media screen and (max-width: 699px) {
+    .post-date-small {
+        display: block;
+    }
+    .post-date {
+        display: none;
+    }
+}

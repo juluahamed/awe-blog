@@ -8,6 +8,10 @@
       Author: {{p.author}} | {{p.created.strftime("%b %d, %Y")}}
     </div>
   </div>
+  <!-- Responsiveness for smaller screen to avoid overlapsing texts -->
+  <div class="post-date-small">
+    Author: {{p.author}} | {{p.created.strftime("%b %d, %Y")}}
+  </div>
 
   <div class="post-content">
     {{p._render_text | safe}}
